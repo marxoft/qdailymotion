@@ -116,11 +116,11 @@ void SubtitlesRequest::list(const QString &resourcePath, const QVariantMap &filt
     u.setQuery(query);
 #else    
     if (!filters.isEmpty()) {
-        addUrlQueryItems(&url, filters);
+        addUrlQueryItems(&u, filters);
     }
     
     if (!fields.isEmpty()) {
-        url.addQueryItem("fields", fields.join(","));
+        u.addQueryItem("fields", fields.join(","));
     }
 #endif
     setUrl(u);

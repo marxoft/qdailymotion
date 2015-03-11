@@ -18,6 +18,7 @@
 #include "request_p.h"
 #include "urls.h"
 #include <QNetworkReply>
+#include <QStringList>
 #ifdef QDAILYMOTION_DEBUG
 #include <QDebug>
 #endif

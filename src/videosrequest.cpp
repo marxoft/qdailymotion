@@ -116,11 +116,11 @@ void VideosRequest::list(const QString &resourcePath, const QVariantMap &filters
     u.setQuery(query);
 #else    
     if (!filters.isEmpty()) {
-        addUrlQueryItems(&url, filters);
+        addUrlQueryItems(&u, filters);
     }
     
     if (!fields.isEmpty()) {
-        url.addQueryItem("fields", fields.join(","));
+        u.addQueryItem("fields", fields.join(","));
     }
 #endif
     setUrl(u);
