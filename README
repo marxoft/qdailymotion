@@ -1,0 +1,9 @@
+QDailymotion
+============
+
+QDailymotion is a Qt/C++ library and QML module providing access to the Dailymotion Data API.
+
+QDailymotion provides a series of request classes and data models enabling read/write access to Dailymotion Data API resources. 
+The library also supports authentication and retrieval of video streams and subtitles.
+ 
+Full documentation is available at http://marxoft.co.uk/doc/qdailymotion

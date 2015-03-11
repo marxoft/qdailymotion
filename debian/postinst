@@ -1,0 +1,18 @@
+#!/bin/sh
+
+set -e
+
+if [ ! -e /usr/lib/libqdailymotion.so.1.0.0 ]
+    then
+        ln -s /opt/lib/libqdailymotion.so.1.0.0 /usr/lib/libqdailymotion.so.1.0.0
+        ln -s /usr/lib/libqdailymotion.so.1.0.0 /usr/lib/libqdailymotion.so
+        ln -s /usr/lib/libqdailymotion.so.1.0.0 /usr/lib/libqdailymotion.so.1
+        ln -s /usr/lib/libqdailymotion.so.1.0.0 /usr/lib/libqdailymotion.so.1.0
+fi
+
+if [ ! -e  /usr/lib/qt4/imports/QDailymotion ]
+    then
+        ln -s /opt/lib/qt4/imports/QDailymotion/ /usr/lib/qt4/imports/
+fi
+
+exit 0
