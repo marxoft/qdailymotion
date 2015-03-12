@@ -101,7 +101,7 @@ ChannelsRequest::ChannelsRequest(QObject *parent) :
 */
 void ChannelsRequest::list(const QString &resourcePath, const QVariantMap &filters, const QStringList &fields) {
     QUrl u(QString("%1%2%3").arg(API_URL).arg(resourcePath.startsWith("/") ? QString() : QString("/"))
-                            .arg(resourcePath.isEmpty() ? QString("/channels") : resourcePath));
+                            .arg(resourcePath.isEmpty() ? QString("channels") : resourcePath));
 #if QT_VERSION >= 0x050000
     QUrlQuery query(u);
     
