@@ -16,25 +16,16 @@
 
 #include "authenticationrequest.h"
 #include <QCoreApplication>
-#include <QStringList>
+#include <QSettings>
 #include <QDebug>
 
 int main(int argc, char *argv[]) {
     QCoreApplication app(argc, argv);
     app.setOrganizationName("QDailymotion");
     app.setApplicationName("QDailymotion");
-    
-    QStringList args = app.arguments();
-    
-    if (args.size() < 2) {
-        qWarning() << "Usage: authentication-revoke TOKEN";
-        return 0;
-    }
-    
-    args.removeFirst();
         
     QDailymotion::AuthenticationRequest request;
-    request.setAccessToken(args.takeFirst());
+    request.setAccessToken(QSettings().value("Authentication/accessToken").toString());
     request.revokeAccessToken();
     QObject::connect(&request, SIGNAL(finished()), &app, SLOT(quit()));
 
