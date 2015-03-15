@@ -182,6 +182,9 @@ void Request::setUrl(const QUrl &url) {
         d->url = url;
         emit urlChanged();
     }
+#ifdef QDAILYMOTION_DEBUG
+    qDebug() << "QDailymotion::Request::setUrl" << url;
+#endif
 }
 
 /*!
@@ -204,10 +207,9 @@ void Request::setHeaders(const QVariantMap &headers) {
     
     d->headers = headers;
     emit headersChanged();
-}
-
-void Request::resetHeaders() {
-    setHeaders(QVariantMap());
+#ifdef QDAILYMOTION_DEBUG
+    qDebug() << "QDailymotion::Request::setHeaders" << headers;
+#endif
 }
 
 /*!
@@ -232,10 +234,9 @@ void Request::setData(const QVariant &data) {
         d->data = data;
         emit dataChanged();
     }
-}
-
-void Request::resetData() {
-    setData(QVariant());
+#ifdef QDAILYMOTION_DEBUG
+    qDebug() << "QDailymotion::Request::setData" << data;
+#endif
 }
 
 /*!
@@ -515,6 +516,9 @@ void Request::setNetworkAccessManager(QNetworkAccessManager *manager) {
     
     d->ownNetworkAccessManager = false;
     d->manager = manager;
+#ifdef QDAILYMOTION_DEBUG
+    qDebug() << "QDailymotion::Request::setNetworkAccessManager" << manager;
+#endif
 }
 
 /*!
@@ -535,7 +539,9 @@ void Request::head(bool authRequired) {
     if (d->reply) {
         delete d->reply;
     }
-    
+#ifdef QDAILYMOTION_DEBUG
+    qDebug() << "QDailymotion::Request::head" << d->url;
+#endif
     d->reply = d->networkAccessManager()->head(d->buildRequest(authRequired));
     connect(d->reply, SIGNAL(finished()), this, SLOT(_q_onReplyFinished()));
 }
@@ -558,7 +564,9 @@ void Request::get(bool authRequired) {
     if (d->reply) {
         delete d->reply;
     }
-    
+#ifdef QDAILYMOTION_DEBUG
+    qDebug() << "QDailymotion::Request::get" << d->url;
+#endif
     d->reply = d->networkAccessManager()->get(d->buildRequest(authRequired));
     connect(d->reply, SIGNAL(finished()), this, SLOT(_q_onReplyFinished()));
 }
@@ -582,14 +590,25 @@ void Request::post(bool authRequired) {
     d->redirects = 0;
     d->setOperation(PostOperation);
     
-    if (d->reply) {
-        delete d->reply;
+    bool ok = true;
+    QByteArray data;
+    
+    switch (d->data.type()) {
+    case QVariant::String:
+    case QVariant::ByteArray:
+        data = d->data.toByteArray();
+        break;
+    default:
+        data = QtJson::Json::serialize(d->data, ok);
     }
-    
-    bool ok;
-    QByteArray data = QtJson::Json::serialize(d->data, ok);
-    
+#ifdef QDAILYMOTION_DEBUG
+    qDebug() << "QDailymotion::Request::post" << d->url << data;
+#endif
     if (ok) {
+        if (d->reply) {
+            delete d->reply;
+        }
+        
         d->setStatus(Loading);        
         d->reply = d->networkAccessManager()->post(d->buildRequest(authRequired), data);
         connect(d->reply, SIGNAL(finished()), this, SLOT(_q_onReplyFinished()));
@@ -620,15 +639,26 @@ void Request::put(bool authRequired) {
     
     d->redirects = 0;
     d->setOperation(PutOperation);
+        
+    bool ok = true;
+    QByteArray data;
     
-    if (d->reply) {
-        delete d->reply;
+    switch (d->data.type()) {
+    case QVariant::String:
+    case QVariant::ByteArray:
+        data = d->data.toByteArray();
+        break;
+    default:
+        data = QtJson::Json::serialize(d->data, ok);
     }
-    
-    bool ok;
-    QByteArray data = QtJson::Json::serialize(d->data, ok);
-    
+#ifdef QDAILYMOTION_DEBUG
+    qDebug() << "QDailymotion::Request::put" << d->url << data;
+#endif
     if (ok) {
+        if (d->reply) {
+            delete d->reply;
+        }
+        
         d->setStatus(Loading);        
         d->reply = d->networkAccessManager()->put(d->buildRequest(authRequired), data);
         connect(d->reply, SIGNAL(finished()), this, SLOT(_q_onReplyFinished()));
@@ -659,7 +689,9 @@ void Request::deleteResource(bool authRequired) {
     if (d->reply) {
         delete d->reply;
     }
-    
+#ifdef QDAILYMOTION_DEBUG
+    qDebug() << "QDailymotion::Request::deleteResource" << d->url;
+#endif
     d->reply = d->networkAccessManager()->deleteResource(d->buildRequest(authRequired));
     connect(d->reply, SIGNAL(finished()), this, SLOT(_q_onReplyFinished()));
 }
@@ -885,8 +917,9 @@ void RequestPrivate::_q_onReplyFinished() {
         }
     }
     
-    bool ok;
-    setResult(QtJson::Json::parse(reply->readAll(), ok));
+    bool ok = true;
+    QString response(reply->readAll());
+    setResult(response.isEmpty() ? response : QtJson::Json::parse(response, ok));
     
     switch (reply->error()) {
     case QNetworkReply::NoError:

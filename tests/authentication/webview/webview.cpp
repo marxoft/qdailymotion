@@ -43,12 +43,25 @@ WebView::WebView(QWidget *parent) :
     query.addQueryItem("redirect_uri", settings.value("Authentication/redirectUri").toString());
     query.addQueryItem("response_type", "code");
     query.addQueryItem("display", "popup");
+    
+    QVariant scope = settings.value("Authentication/scopes");
+    
+    if (!scope.isNull()) {
+        query.addQueryItem("scope", scope.toStringList().join("+"));
+    }
+    
     u.setQuery(query);
 #else
     u.addQueryItem("client_id", request.clientId());
     u.addQueryItem("redirect_uri", settings.value("Authentication/redirectUri").toString());
     u.addQueryItem("response_type", "code");
     u.addQueryItem("display", "popup");
+    
+    QVariant scope = settings.value("Authentication/scopes");
+    
+    if (!scope.isNull()) {
+        u.addQueryItem("scope", scope.toStringList().join("+"));
+    }
 #endif
 #ifdef QDAILYMOTION_DEBUG
     qDebug() << "WebView::setUrl" << u;

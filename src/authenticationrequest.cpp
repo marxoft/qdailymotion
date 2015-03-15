@@ -109,7 +109,6 @@ public:
     \class AuthenticationRequest
     \brief Handles OAuth 2.0 authentication requests.
     
-    \ingroup authentication
     \ingroup requests
     
     The AuthenticationRequest class is used for obtaining and revoking access tokens for use with the Dailymotion Data 
