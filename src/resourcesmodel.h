@@ -14,8 +14,8 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-#ifndef RESOURCESMODEL_H
-#define RESOURCESMODEL_H
+#ifndef QDAILYMOTION_RESOURCESMODEL_H
+#define QDAILYMOTION_RESOURCESMODEL_H
 
 #include "model.h"
 #include "resourcesrequest.h"
@@ -97,4 +97,4 @@ private:
 
 }
 
-#endif // RESOURCESMODEL_H
+#endif // QDAILYMOTION_RESOURCESMODEL_H

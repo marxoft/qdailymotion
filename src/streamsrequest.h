@@ -14,8 +14,8 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-#ifndef STREAMSREQUEST_H
-#define STREAMSREQUEST_H
+#ifndef QDAILYMOTION_STREAMSREQUEST_H
+#define QDAILYMOTION_STREAMSREQUEST_H
 
 #include "request.h"
 
@@ -40,4 +40,4 @@ private:
 
 }
 
-#endif // STREAMSREQUEST_H
+#endif // QDAILYMOTION_STREAMSREQUEST_H

@@ -14,8 +14,8 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-#ifndef MODEL_H
-#define MODEL_H
+#ifndef QDAILYMOTION_MODEL_H
+#define QDAILYMOTION_MODEL_H
 
 #include "qdailymotion_global.h"
 #include <QAbstractListModel>
@@ -77,4 +77,4 @@ private:
 
 }
 
-#endif // MODEL_H
+#endif // QDAILYMOTION_MODEL_H

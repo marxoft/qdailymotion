@@ -14,8 +14,8 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-#ifndef URLS_H
-#define URLS_H
+#ifndef QDAILYMOTION_URLS_H
+#define QDAILYMOTION_URLS_H
 
 #include <QString>
 
@@ -49,4 +49,4 @@ static const QString VIDEO_PAGE_URL("http://www.dailymotion.com/embed/video");
 
 }
 
-#endif // URLS_H
+#endif // QDAILYMOTION_URLS_H

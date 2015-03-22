@@ -14,8 +14,8 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
  
-#ifndef RESOURCESREQUEST_H
-#define RESOURCESREQUEST_H
+#ifndef QDAILYMOTION_RESOURCESREQUEST_H
+#define QDAILYMOTION_RESOURCESREQUEST_H
 
 #include "request.h"
 #include <QStringList>
@@ -50,4 +50,4 @@ private:
 
 }
 
-#endif // RESOURCESREQUEST_H
+#endif // QDAILYMOTION_RESOURCESREQUEST_H

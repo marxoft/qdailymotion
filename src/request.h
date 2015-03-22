@@ -14,8 +14,8 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-#ifndef REQUEST_H
-#define REQUEST_H
+#ifndef QDAILYMOTION_REQUEST_H
+#define QDAILYMOTION_REQUEST_H
 
 #include "qdailymotion_global.h"
 #include <QObject>
@@ -180,4 +180,4 @@ private:
 
 }
 
-#endif // REQUEST_H
+#endif // QDAILYMOTION_REQUEST_H

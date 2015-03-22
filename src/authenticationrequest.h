@@ -14,8 +14,8 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
  
-#ifndef AUTHENTICATIONREQUEST_H
-#define AUTHENTICATIONREQUEST_H
+#ifndef QDAILYMOTION_AUTHENTICATIONREQUEST_H
+#define QDAILYMOTION_AUTHENTICATIONREQUEST_H
 
 #include "request.h"
 
@@ -57,4 +57,4 @@ private:
 
 }
 
-#endif // AUTHENTICATIONREQUEST_H
+#endif // QDAILYMOTION_AUTHENTICATIONREQUEST_H
