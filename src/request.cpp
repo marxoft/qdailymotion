@@ -126,7 +126,7 @@ void Request::setAccessToken(const QString &token) {
     
     if (token != d->accessToken) {
         d->accessToken = token;
-        emit accessTokenChanged();
+        emit accessTokenChanged(token);
     }
 #ifdef QDAILYMOTION_DEBUG
     qDebug() << "QDailymotion::Request::setAccessToken" << token;
@@ -153,7 +153,7 @@ void Request::setRefreshToken(const QString &token) {
     
     if (token != d->refreshToken) {
         d->refreshToken = token;
-        emit refreshTokenChanged();
+        emit refreshTokenChanged(token);
     }
 #ifdef QDAILYMOTION_DEBUG
     qDebug() << "QDailymotion::Request::setRefreshToken" << token;
@@ -746,7 +746,7 @@ void RequestPrivate::setStatus(Request::Status s) {
     if (s != status) {
         Q_Q(Request);
         status = s;
-        emit q->statusChanged();
+        emit q->statusChanged(s);
     }
 #ifdef QDAILYMOTION_DEBUG
     qDebug() << "QDailymotion::RequestPrivate::setStatus " << Request::Status(s);
