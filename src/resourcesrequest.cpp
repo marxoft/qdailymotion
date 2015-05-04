@@ -130,6 +130,7 @@ void ResourcesRequest::list(const QString &resourcePath, const QVariantMap &filt
     }
 #endif
     setUrl(u);
+    setData(QVariant());
     Request::get();
 }
 
@@ -168,6 +169,7 @@ void ResourcesRequest::get(const QString &resourcePath, const QVariantMap &filte
     }
 #endif
     setUrl(u);
+    setData(QVariant());
     Request::get();
 }
 
@@ -185,6 +187,7 @@ void ResourcesRequest::insert(const QString &resourcePath) {
     QUrl u(QString("%1%2%3").arg(API_URL).arg(resourcePath.startsWith("/") ? QString() : QString("/"))
                             .arg(resourcePath));
     setUrl(u);
+    setData(QVariant());
     Request::post();
 }
 
@@ -248,6 +251,7 @@ void ResourcesRequest::del(const QString &resourcePath) {
     QUrl u(QString("%1%2%3").arg(API_URL).arg(resourcePath.startsWith("/") ? QString() : QString("/"))
                             .arg(resourcePath));
     setUrl(u);
+    setData(QVariant());
     deleteResource();
 }
 

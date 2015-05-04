@@ -19,6 +19,7 @@
 #include "urls.h"
 #include <QNetworkAccessManager>
 #include <QNetworkReply>
+#include <QStringList>
 
 namespace QDailymotion {
 
@@ -60,6 +61,11 @@ public:
     }
 };
 
+static const QStringList FORMAT_LIST = QStringList() << "stream_source_url" << "stream_h264_uhd_url"
+                                                     << "stream_h264_qhd_url" << "stream_h264_hd1080_url"
+                                                     << "stream_h264_hd_url" << "stream_h264_hq_url"
+                                                     << "stream_h264_url" << "stream_h264_ld_url";
+
 class StreamsRequestPrivate : public RequestPrivate
 {
 
@@ -99,15 +105,11 @@ public:
         
         if (ok) {
             QVariantList list;
-            QHashIterator<QString, Format> iterator(formatHash);
             
-            while (iterator.hasNext()) {
-                iterator.next();
-                QVariant v = info.value(iterator.key());
-                
-                if (!v.isNull()) {
-                    Format format = iterator.value();
-                    format["url"] = v;
+            foreach (QString f, FORMAT_LIST) {
+                if (info.contains(f)) {
+                    Format format = formatHash.value(f);
+                    format["url"] = info.value(f);
                     list << format;
                 }
             }
@@ -209,9 +211,7 @@ StreamsRequest::StreamsRequest(QObject *parent) :
 /*!
     \brief Requests a list of streams for the video identified by id.
 */
-void StreamsRequest::list(const QString &id) {
-    Q_D(StreamsRequest);
-    
+void StreamsRequest::list(const QString &id) {    
     setUrl(VIDEO_PAGE_URL + "/" + id);
     get(false);
 }

@@ -50,8 +50,13 @@ public:
     
         bool ok;
         setResult(QtJson::Json::parse(reply->readAll(), ok));
+        
+        QNetworkReply::NetworkError e = reply->error();
+        QString es = reply->errorString();
+        reply->deleteLater();
+        reply = 0;
     
-        switch (reply->error()) {
+        switch (e) {
         case QNetworkReply::NoError:
             break;
         case QNetworkReply::OperationCanceledError:
@@ -60,29 +65,27 @@ public:
             setErrorString(QString());
             emit q->finished();
             return;
+        case QNetworkReply::AuthenticationRequiredError:
+            if (refreshToken.isEmpty()) {
+                setStatus(Request::Failed);
+                setError(Request::Error(e));
+                setErrorString(es);
+                emit q->finished();
+            }
+            else {
+                refreshAccessToken();
+            }
+        
+            return;
         default:
             setStatus(Request::Failed);
-            setError(Request::Error(reply->error()));
-            setErrorString(reply->errorString());
+            setError(Request::Error(e));
+            setErrorString(es);
             emit q->finished();
             return;
         }
     
-        if (ok) {
-            QVariantMap map = result.toMap();
-            
-            switch (authRequest) {
-            case WebToken:
-            case DeviceToken:
-                setStatus(Request::Ready);
-                setError(Request::NoError);
-                setErrorString(QString());
-                break;
-            default:
-                break;
-            }
-        }
-        else if (authRequest == RevokeToken) {
+        if ((ok) || (authRequest == RevokeToken)) {
             setStatus(Request::Ready);
             setError(Request::NoError);
             setErrorString(QString());
@@ -199,6 +202,7 @@ void AuthenticationRequest::revokeAccessToken() {
     Q_D(AuthenticationRequest);
     d->authRequest = AuthenticationRequestPrivate::RevokeToken;
     setUrl(REVOKE_TOKEN_URL);
+    setData(QVariant());
     get();
 }
 

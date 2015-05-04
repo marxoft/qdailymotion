@@ -582,11 +582,6 @@ void Request::post(bool authRequired) {
         return;
     }
     
-    if (d->data.isNull()) {
-        qDebug() << "QDailymotion::Request::post(): data is empty";
-        return;
-    }
-    
     d->redirects = 0;
     d->setOperation(PostOperation);
     
@@ -596,10 +591,12 @@ void Request::post(bool authRequired) {
     switch (d->data.type()) {
     case QVariant::String:
     case QVariant::ByteArray:
+    case QVariant::Invalid:
         data = d->data.toByteArray();
         break;
     default:
         data = QtJson::Json::serialize(d->data, ok);
+        break;
     }
 #ifdef QDAILYMOTION_DEBUG
     qDebug() << "QDailymotion::Request::post" << d->url << data;
@@ -632,11 +629,6 @@ void Request::put(bool authRequired) {
         return;
     }
     
-    if (d->data.isNull()) {
-        qDebug() << "QDailymotion::Request::put(): data is empty";
-        return;
-    }
-    
     d->redirects = 0;
     d->setOperation(PutOperation);
         
@@ -646,10 +638,12 @@ void Request::put(bool authRequired) {
     switch (d->data.type()) {
     case QVariant::String:
     case QVariant::ByteArray:
+    case QVariant::Invalid:
         data = d->data.toByteArray();
         break;
     default:
         data = QtJson::Json::serialize(d->data, ok);
+        break;
     }
 #ifdef QDAILYMOTION_DEBUG
     qDebug() << "QDailymotion::Request::put" << d->url << data;
@@ -843,7 +837,12 @@ void RequestPrivate::_q_onAccessTokenRefreshed() {
     bool ok;
     setResult(QtJson::Json::parse(reply->readAll(), ok));
     
-    switch (reply->error()) {
+    QNetworkReply::NetworkError e = reply->error();
+    QString es = reply->errorString();
+    reply->deleteLater();
+    reply = 0;
+    
+    switch (e) {
     case QNetworkReply::NoError:
         break;
     case QNetworkReply::OperationCanceledError:
@@ -854,12 +853,12 @@ void RequestPrivate::_q_onAccessTokenRefreshed() {
         return;
     default:
         setStatus(Request::Failed);
-        setError(Request::Error(reply->error()));
-        setErrorString(reply->errorString());
+        setError(Request::Error(e));
+        setErrorString(es);
         emit q->finished();
         return;
     }
-    
+        
     if (ok) {
         QString token = result.toMap().value("access_token").toString();
         
@@ -913,7 +912,10 @@ void RequestPrivate::_q_onReplyFinished() {
         }
     
         if (!redirect.isEmpty()) {
+            reply->deleteLater();
+            reply = 0;
             followRedirect(redirect);
+            return;
         }
     }
     
@@ -921,7 +923,12 @@ void RequestPrivate::_q_onReplyFinished() {
     QString response(reply->readAll());
     setResult(response.isEmpty() ? response : QtJson::Json::parse(response, ok));
     
-    switch (reply->error()) {
+    QNetworkReply::NetworkError e = reply->error();
+    QString es = reply->errorString();
+    reply->deleteLater();
+    reply = 0;
+    
+    switch (e) {
     case QNetworkReply::NoError:
         break;
     case QNetworkReply::OperationCanceledError:
@@ -933,8 +940,8 @@ void RequestPrivate::_q_onReplyFinished() {
     case QNetworkReply::AuthenticationRequiredError:
         if (refreshToken.isEmpty()) {
             setStatus(Request::Failed);
-            setError(Request::Error(reply->error()));
-            setErrorString(reply->errorString());
+            setError(Request::Error(e));
+            setErrorString(es);
             emit q->finished();
         }
         else {
@@ -944,8 +951,8 @@ void RequestPrivate::_q_onReplyFinished() {
         return;
     default:
         setStatus(Request::Failed);
-        setError(Request::Error(reply->error()));
-        setErrorString(reply->errorString());
+        setError(Request::Error(e));
+        setErrorString(es);
         emit q->finished();
         return;
     }
@@ -960,7 +967,7 @@ void RequestPrivate::_q_onReplyFinished() {
         setError(Request::ParseError);
         setErrorString(Request::tr("Unable to parse response"));
     }
-    
+        
     emit q->finished();
 }
 

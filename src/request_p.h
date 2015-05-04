@@ -42,7 +42,6 @@ inline void addUrlQueryItems(QUrlQuery *query, const QVariantMap &map) {
 #endif
     QMapIterator<QString, QVariant> iterator(map);
     QByteArray value;
-    bool ok;
     
     while (iterator.hasNext()) {
         iterator.next();
@@ -53,13 +52,11 @@ inline void addUrlQueryItems(QUrlQuery *query, const QVariantMap &map) {
             value = iterator.value().toByteArray();
             break;
         default:
-            value = QtJson::Json::serialize(iterator.value(), ok);
+            value = QtJson::Json::serialize(iterator.value());
             break;
         }
         
-        if (ok) {
-            query->addQueryItem(iterator.key(), value);
-        }
+        query->addQueryItem(iterator.key(), value);
     }
 }
 
@@ -70,7 +67,6 @@ inline void addUrlQueryItems(QUrl *url, const QVariantMap &map) {
 #endif
     QMapIterator<QString, QVariant> iterator(map);
     QByteArray value;
-    bool ok;
     
     while (iterator.hasNext()) {
         iterator.next();
@@ -81,13 +77,11 @@ inline void addUrlQueryItems(QUrl *url, const QVariantMap &map) {
             value = iterator.value().toByteArray();
             break;
         default:
-            value = QtJson::Json::serialize(iterator.value(), ok);
+            value = QtJson::Json::serialize(iterator.value());
             break;
         }
         
-        if (ok) {
-            url->addQueryItem(iterator.key(), value);
-        }
+        url->addQueryItem(iterator.key(), value);
     }
 }
 #endif
@@ -98,7 +92,6 @@ inline void addRequestHeaders(QNetworkRequest *request, const QVariantMap &map) 
 #endif
     QMapIterator<QString, QVariant> iterator(map);
     QByteArray value;
-    bool ok;
     
     while (iterator.hasNext()) {
         iterator.next();
@@ -109,13 +102,11 @@ inline void addRequestHeaders(QNetworkRequest *request, const QVariantMap &map) 
             value = iterator.value().toByteArray();
             break;
         default:
-            value = QtJson::Json::serialize(iterator.value(), ok);
+            value = QtJson::Json::serialize(iterator.value());
             break;
         }
         
-        if (ok) {
-            request->setRawHeader(iterator.key().toUtf8(), value);
-        }
+        request->setRawHeader(iterator.key().toUtf8(), value);
     }
 }
 
@@ -125,7 +116,6 @@ inline void addPostBody(QString *body, const QVariantMap &map) {
 #endif
     QMapIterator<QString, QVariant> iterator(map);
     QByteArray value;
-    bool ok;
     
     while (iterator.hasNext()) {
         iterator.next();
@@ -136,16 +126,14 @@ inline void addPostBody(QString *body, const QVariantMap &map) {
             value = iterator.value().toByteArray();
             break;
         default:
-            value = QtJson::Json::serialize(iterator.value(), ok);
+            value = QtJson::Json::serialize(iterator.value());
             break;
         }
         
-        if (ok) {
-            body->append(iterator.key() + "=" + value);
-            
-            if (iterator.hasNext()) {
-                body->append("&");
-            }
+        body->append(iterator.key() + "=" + value);
+        
+        if (iterator.hasNext()) {
+            body->append("&");
         }
     }
 }
