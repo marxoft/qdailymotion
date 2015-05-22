@@ -1,7 +1,7 @@
 #include "plugin.h"
-#include "authenticationrequest.h"
-#include "resourcesmodel.h"
-#include "streamsmodel.h"
+#include "../src/authenticationrequest.h"
+#include "../src/resourcesmodel.h"
+#include "../src/streamsmodel.h"
 #if QT_VERSION >= 0x050000
 #include <qqml.h>
 #else

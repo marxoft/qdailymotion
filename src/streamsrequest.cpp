@@ -18,6 +18,7 @@
 #include "request_p.h"
 #include "urls.h"
 #include <QNetworkAccessManager>
+#include <QNetworkCookieJar>
 #include <QNetworkReply>
 #include <QStringList>
 
@@ -104,28 +105,40 @@ public:
                                                                         .section(";\n", 0, 0), ok).toMap();
         
         if (ok) {
-            QVariantList list;
-            
-            foreach (QString f, FORMAT_LIST) {
-                if (info.contains(f)) {
-                    Format format = formatHash.value(f);
-                    format["url"] = info.value(f);
-                    list << format;
-                }
+            if (info.contains("error")) {
+                setStatus(Request::Failed);
+                setError(Request::UnknownContentError);
+                setErrorString(info.value("error").toMap().value("message").toString());
             }
-            
-            setResult(list);
-            setStatus(Request::Ready);
-            setError(Request::NoError);
-            setErrorString(QString());
-            emit q->finished();
+            else {
+                QVariantList list;
+
+                foreach (QString f, FORMAT_LIST) {
+                    if (info.contains(f)) {
+                        QVariant v = info.value(f);
+
+                        if (!v.isNull()) {
+                            Format format = formatHash.value(f);
+                            format["url"] = v;
+                            list << format;
+                        }
+                    }
+                }
+
+                setResult(list);
+                setStatus(Request::Ready);
+                setError(Request::NoError);
+                setErrorString(QString());
+            }
         }
         else {
             setStatus(Request::Failed);
             setError(Request::ParseError);
             setErrorString(Request::tr("Unable to parse response"));
         }
-    }        
+
+        emit q->finished();
+    }
     
     static FormatHash formatHash;
                 
@@ -211,8 +224,11 @@ StreamsRequest::StreamsRequest(QObject *parent) :
 /*!
     \brief Requests a list of streams for the video identified by id.
 */
-void StreamsRequest::list(const QString &id) {    
+void StreamsRequest::list(const QString &id) {
+    Q_D(StreamsRequest);
     setUrl(VIDEO_PAGE_URL + "/" + id);
+    d->networkAccessManager()->cookieJar()->setCookiesFromUrl(QList<QNetworkCookie>() << QNetworkCookie("ff", "off"),
+                                                              url());
     get(false);
 }
 

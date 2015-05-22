@@ -146,7 +146,7 @@ void AuthenticationRequest::setRedirectUri(const QString &uri) {
         emit redirectUriChanged();
     }
 #if QDAILYMOTION_DEBUG
-    qDebug() << "AuthenticationRequest::setRedirectUri" << uri;
+    qDebug() << "QDailymotion::AuthenticationRequest::setRedirectUri" << uri;
 #endif
 }
 
