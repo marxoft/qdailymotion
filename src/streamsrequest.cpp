@@ -19,6 +19,7 @@
 #include "urls.h"
 #include <QNetworkAccessManager>
 #include <QNetworkCookieJar>
+#include <QNetworkCookie>
 #include <QNetworkReply>
 #include <QStringList>
 
