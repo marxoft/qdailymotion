@@ -592,7 +592,7 @@ void Request::post(bool authRequired) {
     case QVariant::String:
     case QVariant::ByteArray:
     case QVariant::Invalid:
-        data = d->data.toByteArray();
+        data = d->data.toString().toUtf8();
         break;
     default:
         data = QtJson::Json::serialize(d->data, ok);
@@ -639,7 +639,7 @@ void Request::put(bool authRequired) {
     case QVariant::String:
     case QVariant::ByteArray:
     case QVariant::Invalid:
-        data = d->data.toByteArray();
+        data = d->data.toString().toUtf8();
         break;
     default:
         data = QtJson::Json::serialize(d->data, ok);
