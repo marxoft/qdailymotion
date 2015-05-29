@@ -1,21 +1,13 @@
 TEMPLATE = lib
 
 #DEFINES += QDAILYMOTION_DEBUG
+DEFINES += QDAILYMOTION_STATIC_LIBRARY
 
 QT += network
 QT -= gui
 
 TARGET = qdailymotion
 DESTDIR = ../lib
-
-contains(MEEGO_EDITION,harmattan) {
-    CONFIG += staticlib
-    DEFINES += QDAILYMOTION_STATIC_LIBRARY
-} else {
-    CONFIG += create_prl
-    DEFINES += QDAILYMOTION_LIBRARY
-    INSTALLS += headers
-}
 
 HEADERS += \
     authenticationrequest.h \
@@ -51,13 +43,25 @@ headers.files += \
     streamsmodel.h \
     streamsrequest.h \
     urls.h
-
-!isEmpty(INSTALL_SRC_PREFIX) {
-    target.path = $$INSTALL_SRC_PREFIX/lib
-    headers.path = $$INSTALL_SRC_PREFIX/include/qdailymotion
-} else {
-    target.path = /usr/lib
-    headers.path = /usr/include/qdailymotion
+    
+symbian {
+    TARGET.CAPABILITY += NetworkServices ReadUserData WriteUserData
+    TARGET.EPOCALLOWDLLDATA = 1
+    TARGET.EPOCHEAPSIZE = 0x20000 0x8000000
+    TARGET.EPOCSTACKSIZE = 0x14000
 }
+    
+contains(DEFINES,QDAILYMOTION_STATIC_LIBRARY) {
+    CONFIG += staticlib
+} else {
+    CONFIG += create_prl
+    INSTALLS += target headers
 
-INSTALLS += target
+    !isEmpty(INSTALL_SRC_PREFIX) {
+        target.path = $$INSTALL_SRC_PREFIX/lib
+        headers.path = $$INSTALL_SRC_PREFIX/include/qdailymotion
+    } else {
+        target.path = /usr/lib
+        headers.path = /usr/include/qdailymotion
+    }
+}
