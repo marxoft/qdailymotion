@@ -17,7 +17,7 @@ HEADERS += \
 SOURCES += \
     plugin.cpp
     
-contains(QDAILYMOTION_STATIC_LIBRARY) {
+contains(DEFINES,QDAILYMOTION_STATIC_LIBRARY) {
     CONFIG += link_pkgconfig
 } else {
     CONFIG += link_prl
