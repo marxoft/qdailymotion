@@ -45,28 +45,22 @@ public:
     }
 };
 
-class FormatHash : public QHash<QString, Format>
+class FormatMap : public QMap<QString, Format>
 {
 
 public:
-    FormatHash() : 
-        QHash<QString, Format>() 
+    FormatMap() : 
+        QMap<QString, Format>() 
     {
-        insert("stream_h264_ld_url", Format("stream_h264_ld_url", "H264 audio/video", "mp4", 400, 240));
-        insert("stream_h264_url", Format("stream_h264_url", "H264 audio/video", "mp4", 512, 384));
-        insert("stream_h264_hq_url", Format("stream_h264_hq_url", "H264 audio/video", "mp4", 848, 480));
-        insert("stream_h264_hd_url", Format("stream_h264_hd_url", "H264 audio/video", "mp4", 1280, 720));
-        insert("stream_h264_hd1080_url", Format("stream_h264_hd1080_url", "H264 audio/video", "mp4", 1920, 1080));
-        insert("stream_h264_qhd_url", Format("stream_h264_qhd_url", "H264 audio/video", "mp4", 2560, 1440));
-        insert("stream_h264_uhd_url", Format("stream_h264_uhd_url", "H264 audio/video", "mp4", 3840, 2160));
-        insert("stream_source_url", Format("stream_source_url", "H264 audio/video", "mp4", 0, 0));
+        insert("240", Format("240", "H264 audio/video", "mp4", 400, 240));
+        insert("380", Format("380", "H264 audio/video", "mp4", 512, 384));
+        insert("480", Format("480", "H264 audio/video", "mp4", 848, 480));
+        insert("720", Format("720", "H264 audio/video", "mp4", 1280, 720));
+        insert("1080", Format("1080", "H264 audio/video", "mp4", 1920, 1080));
+        insert("1440", Format("1440", "H264 audio/video", "mp4", 2560, 1440));
+        insert("2160", Format("2160", "H264 audio/video", "mp4", 3840, 2160));
     }
 };
-
-static const QStringList FORMAT_LIST = QStringList() << "stream_source_url" << "stream_h264_uhd_url"
-                                                     << "stream_h264_qhd_url" << "stream_h264_hd1080_url"
-                                                     << "stream_h264_hd_url" << "stream_h264_hq_url"
-                                                     << "stream_h264_url" << "stream_h264_ld_url";
 
 class StreamsRequestPrivate : public RequestPrivate
 {
@@ -102,51 +96,64 @@ public:
         }
         
         bool ok;
-        QVariantMap info = QtJson::Json::parse(QString(reply->readAll()).section("var info = ", 1, 1)
-                                                                        .section(";\n", 0, 0), ok).toMap();
-        
+        QVariantMap info = QtJson::Json::parse(QString(reply->readAll())
+                           .section("dmp.create(document.getElementById('player'), ", 1, 1)
+                           .section(");\n", 0, 0), ok).toMap();
+  
         if (ok) {
-            if (info.contains("error")) {
-                setStatus(Request::Failed);
-                setError(Request::UnknownContentError);
-                setErrorString(info.value("error").toMap().value("message").toString());
-            }
-            else {
+            const QVariantMap metadata = info.value("metadata").toMap();
+            
+            if (metadata.contains("qualities")) {
+                const QVariantMap qualities = metadata.value("qualities").toMap();
                 QVariantList list;
+                QMapIterator<QString, Format> iterator(formatMap);
+                
+                while (iterator.hasNext()) {
+                    iterator.next();
+                    
+                    if (qualities.contains(iterator.key())) {
+                        const QVariantList ql = qualities.value(iterator.key()).toList();
 
-                foreach (QString f, FORMAT_LIST) {
-                    if (info.contains(f)) {
-                        QVariant v = info.value(f);
-
-                        if (!v.isNull()) {
-                            Format format = formatHash.value(f);
-                            format["url"] = v;
-                            list << format;
+                        if (!ql.isEmpty()) {
+                            const QVariant u = ql.first().toMap().value("url");
+                            
+                            if (!u.isNull()) {
+                                Format format = iterator.value();
+                                format["url"] = u;
+                                list << format;
+                            }
                         }
                     }
                 }
-
+                
                 setResult(list);
                 setStatus(Request::Ready);
                 setError(Request::NoError);
                 setErrorString(QString());
+                emit q->finished();
+                return;
+            }
+            else if (metadata.contains("error")) {
+                setStatus(Request::Failed);
+                setError(Request::UnknownContentError);
+                setErrorString(metadata.value("error").toMap().value("message").toString());
+                emit q->finished();
+                return;
             }
         }
-        else {
-            setStatus(Request::Failed);
-            setError(Request::ParseError);
-            setErrorString(Request::tr("Unable to parse response"));
-        }
-
+        
+        setStatus(Request::Failed);
+        setError(Request::UnknownContentError);
+        setErrorString(StreamsRequest::tr("No streams found"));
         emit q->finished();
     }
     
-    static FormatHash formatHash;
+    static FormatMap formatMap;
                 
     Q_DECLARE_PUBLIC(StreamsRequest)
 };
 
-FormatHash StreamsRequestPrivate::formatHash;
+FormatMap StreamsRequestPrivate::formatMap;
 
 /*!
     \class StreamsRequest
