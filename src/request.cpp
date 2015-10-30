@@ -816,6 +816,7 @@ void RequestPrivate::refreshAccessToken() {
     
     QUrl tokenUrl(TOKEN_URL);
     QNetworkRequest request(tokenUrl);
+    request.setHeader(QNetworkRequest::ContentTypeHeader, "application/x-www-form-urlencoded");
     QString body("client_id=" + clientId + "&client_secret=" + clientSecret + "&refresh_token=" + refreshToken +
                  "&grant_type=" + GRANT_TYPE_REFRESH);
                     
