@@ -96,9 +96,9 @@ public:
         }
         
         bool ok;
-        QVariantMap info = QtJson::Json::parse(QString(reply->readAll())
-                           .section("dmp.create(document.getElementById('player'), ", 1, 1)
-                           .section(");\n", 0, 0), ok).toMap();
+        const QVariantMap info = QtJson::Json::parse(QString(reply->readAll())
+                                 .section("dmp.create(document.getElementById('player'), ", 1, 1)
+                                 .section(");\n", 0, 0), ok).toMap();
   
         if (ok) {
             const QVariantMap metadata = info.value("metadata").toMap();
