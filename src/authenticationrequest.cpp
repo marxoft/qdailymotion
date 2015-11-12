@@ -51,8 +51,8 @@ public:
         bool ok;
         setResult(QtJson::Json::parse(reply->readAll(), ok));
         
-        QNetworkReply::NetworkError e = reply->error();
-        QString es = reply->errorString();
+        const QNetworkReply::NetworkError e = reply->error();
+        const QString es = reply->errorString();
         reply->deleteLater();
         reply = 0;
     
@@ -174,6 +174,10 @@ void AuthenticationRequest::setScopes(const QStringList &scopes) {
     \brief Submits code in exchange for a Dailymotion access token.
 */
 void AuthenticationRequest::exchangeCodeForAccessToken(const QString &code) {
+    if (status() == Loading) {
+        return;
+    }
+    
     Q_D(AuthenticationRequest);
     d->authRequest = AuthenticationRequestPrivate::WebToken;
     setUrl(TOKEN_URL);
@@ -186,6 +190,10 @@ void AuthenticationRequest::exchangeCodeForAccessToken(const QString &code) {
     \brief Submits \a username and \a password in exchange for a Dailymotion access token.
 */
 void AuthenticationRequest::exchangeCredentialsForAccessToken(const QString &username, const QString &password) {
+    if (status() == Loading) {
+        return;
+    }
+    
     Q_D(AuthenticationRequest);
     d->authRequest = AuthenticationRequestPrivate::DeviceToken;
     setUrl(TOKEN_URL);
@@ -199,6 +207,10 @@ void AuthenticationRequest::exchangeCredentialsForAccessToken(const QString &use
     \brief Revokes Dailymotion Data API access for the current access token.
 */
 void AuthenticationRequest::revokeAccessToken() {
+    if (status() == Loading) {
+        return;
+    }
+    
     Q_D(AuthenticationRequest);
     d->authRequest = AuthenticationRequestPrivate::RevokeToken;
     setUrl(REVOKE_TOKEN_URL);

@@ -78,7 +78,13 @@ public:
     
         Q_Q(StreamsRequest);
         
-        switch (reply->error()) {
+        const QString response = reply->readAll();
+        const QNetworkReply::NetworkError e = reply->error();
+        const QString es = reply->errorString();
+        reply->deleteLater();
+        reply = 0;
+        
+        switch (e) {
         case QNetworkReply::NoError:
             break;
         case QNetworkReply::OperationCanceledError:
@@ -89,14 +95,14 @@ public:
             return;
         default:
             setStatus(Request::Failed);
-            setError(Request::Error(reply->error()));
-            setErrorString(reply->errorString());
+            setError(Request::Error(e));
+            setErrorString(es);
             emit q->finished();
             return;
         }
         
         bool ok;
-        const QVariantMap info = QtJson::Json::parse(QString(reply->readAll())
+        const QVariantMap info = QtJson::Json::parse(response
                                  .section("dmp.create(document.getElementById('player'), ", 1, 1)
                                  .section(");\n", 0, 0), ok).toMap();
   
@@ -233,6 +239,10 @@ StreamsRequest::StreamsRequest(QObject *parent) :
     \brief Requests a list of streams for the video identified by id.
 */
 void StreamsRequest::list(const QString &id) {
+    if (status() == Loading) {
+        return;
+    }
+    
     Q_D(StreamsRequest);
     setUrl(VIDEO_PAGE_URL + "/" + id);
     d->networkAccessManager()->cookieJar()->setCookiesFromUrl(QList<QNetworkCookie>() << QNetworkCookie("ff", "off"),
