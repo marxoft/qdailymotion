@@ -52,6 +52,7 @@ public:
     FormatMap() : 
         QMap<QString, Format>() 
     {
+        insert("144", Format("144", "H264 audio/video", "mp4", 176, 144));
         insert("240", Format("240", "H264 audio/video", "mp4", 400, 240));
         insert("380", Format("380", "H264 audio/video", "mp4", 512, 384));
         insert("480", Format("480", "H264 audio/video", "mp4", 848, 480));

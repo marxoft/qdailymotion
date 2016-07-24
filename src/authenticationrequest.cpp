@@ -66,14 +66,14 @@ public:
             emit q->finished();
             return;
         case QNetworkReply::AuthenticationRequiredError:
-            if (refreshToken.isEmpty()) {
+            if ((authRequest == RevokeToken) && (!refreshToken.isEmpty())) {
+                refreshAccessToken();
+            }
+            else {
                 setStatus(Request::Failed);
                 setError(Request::Error(e));
                 setErrorString(es);
                 emit q->finished();
-            }
-            else {
-                refreshAccessToken();
             }
         
             return;

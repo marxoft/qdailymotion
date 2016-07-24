@@ -41,12 +41,12 @@ public:
         Q_Q(ResourcesModel);
     
         if (request->status() == ResourcesRequest::Ready) {
-            QVariantMap result = request->result().toMap();
+            const QVariantMap result = request->result().toMap();
         
             if (!result.isEmpty()) {
                 hasMore = result.value("has_more").toBool();
             
-                QVariantList list = result.value("list").toList();
+                const QVariantList list = result.value("list").toList();
             
                 if (!list.isEmpty()) {
                     if (items.isEmpty()) {
@@ -55,7 +55,7 @@ public:
                     
                     q->beginInsertRows(QModelIndex(), items.size(), items.size() + list.size() - 1);
                     
-                    foreach (QVariant item, list) {
+                    foreach (const QVariant &item, list) {
                         items << item.toMap();
                     }
                     
@@ -78,12 +78,13 @@ public:
         Q_Q(ResourcesModel);
     
         if ((request->status() == ResourcesRequest::Ready) && (writeResourcePath == resourcePath)) {
-            QVariantMap result = request->result().toMap();
+            const QVariantMap result = request->result().toMap();
         
             if (!result.isEmpty()) {
                 if (items.isEmpty()) {
                     setRoleNames(result);
                 }
+                
                 q->beginInsertRows(QModelIndex(), 0, 0);
                 items.prepend(result);
                 q->endInsertRows();
@@ -104,10 +105,10 @@ public:
         Q_Q(ResourcesModel);
     
         if (request->status() == ResourcesRequest::Ready) {
-            QVariantMap result = request->result().toMap();
+            const QVariantMap result = request->result().toMap();
         
             if (!result.isEmpty()) {
-                QVariant id = result.value("id");
+                const QVariant id = result.value("id");
                 
                 if (!id.isNull()) {
                     for (int i = 0; i < items.size(); i++) {
