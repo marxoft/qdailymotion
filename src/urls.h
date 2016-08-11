@@ -41,7 +41,7 @@ static const QString MANAGE_PLAYLISTS_SCOPE("manage_playlists");
 static const QString MANAGE_TILES_SCOPE("manage_tiles");
 static const QString MANAGE_SUBSCRIPTIONS_SCOPE("manage_subscriptions");
 static const QString MANAGE_FRIENDS_SCOPE("manage_friends");
-static const QString MANAGE_FAVORITES_SCOPE("manage_favorites");
+static const QString MANAGE_FAVORITES_SCOPE("manage_likes");
 static const QString MANAGE_GROUPS_SCOPE("manage_groups");
 
 // VideoPage
