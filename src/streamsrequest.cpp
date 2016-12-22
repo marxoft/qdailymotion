@@ -103,9 +103,8 @@ public:
         }
         
         bool ok;
-        const QVariantMap info = QtJson::Json::parse(response
-                                 .section("dmp.create(document.getElementById('player'), ", 1, 1)
-                                 .section(");\n", 0, 0), ok).toMap();
+        const QVariantMap info = QtJson::Json::parse(response.section("var config =", -1)
+                                                     .section(";\n", 0, 0).trimmed(), ok).toMap();
   
         if (ok) {
             const QVariantMap metadata = info.value("metadata").toMap();
@@ -121,12 +120,12 @@ public:
                     if (qualities.contains(iterator.key())) {
                         const QVariantList ql = qualities.value(iterator.key()).toList();
 
-                        if (!ql.isEmpty()) {
-                            const QVariant u = ql.first().toMap().value("url");
+                        foreach (const QVariant &q, ql) {
+                            const QVariantMap f = q.toMap();
                             
-                            if (!u.isNull()) {
+                            if (f.value("type") == "video/mp4") {
                                 Format format = iterator.value();
-                                format["url"] = u;
+                                format["url"] = f.value("url");
                                 list << format;
                             }
                         }
@@ -140,7 +139,8 @@ public:
                 emit q->finished();
                 return;
             }
-            else if (metadata.contains("error")) {
+
+            if (metadata.contains("error")) {
                 setStatus(Request::Failed);
                 setError(Request::UnknownContentError);
                 setErrorString(metadata.value("error").toMap().value("message").toString());
