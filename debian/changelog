@@ -1,3 +1,9 @@
+qdailymotion (0.1.8) unstable; urgency=low
+
+  * Fix retrieval of video streams.
+
+ -- Stuart Howarth <showarth@marxoft.co.uk>  Thu, 22 Dec 2016 23:08:31 +0000
+
 qdailymotion (0.1.7) unstable; urgency=low
 
   * Replace deprecated 'manage_favorites' scope with 'manage_likes'.
